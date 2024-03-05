@@ -16,6 +16,7 @@ FLAGS = flags.FLAGS
 def add_options():
   flags.DEFINE_string('input_dir', default = None, help = 'path to dataset')
   flags.DEFINE_string('ckpt', default = 'ckpt', help = 'path to ckpt')
+  flags.DEFINE_boolean('test', default = False, help = 'whether to run in test mode')
 
 def load_dataset():
   voltage = load_workbook(join(FLAGS.input_dir, 'Voltage.xlsx')); voltage = voltage.active
@@ -42,6 +43,30 @@ def load_dataset():
   return samples
 
 def main(unused_argv):
+  if FLAGS.test: test()
+  else train()
+
+def test():
+  models = list()
+  for i in range(35 * 2):
+    with open('%d.pickle' % i, 'rb') as f:
+      models.append(pickle.loads(f.read()))
+  samples = load_dataset()
+  x = np.stack([sample[0].flatten() for sample in samples], axis = 0) # x.shape = (sample_num, 1800*2)
+  y = np.stack([sample[1].flatten() for sample in samples], axis = 0) # y.shape = (sample_num, 35*2)
+  losses = list()
+  for idx, (sample, label) in enumerate(zip(x, y)):
+    results = list()
+    for model in models:
+      result = model.predict(np.expand_dims(sample, axis = 0)) # y.shape = (1, 1)
+      results.append(result)
+    results = np.squeeze(np.concat(results, axis = -1), axis = 0) # results.shape = (1, 35 * 2)
+    mae = np.mean(np.abs(label - results))
+    print('#%d mea: %f' % (idx, mae))
+    losses.append(mae)
+  print('mean mae: %f' % np.mean(losses))
+
+def train():
   samples = load_dataset()
   if exists(FLAGS.ckpt): rmtree(FLAGS.ckpt)
   mkdir(FLAGS.ckpt)
