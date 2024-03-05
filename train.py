@@ -44,7 +44,7 @@ def load_dataset():
 
 def main(unused_argv):
   if FLAGS.test: test()
-  else train()
+  else: train()
 
 def test():
   models = list()
