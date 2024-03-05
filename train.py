@@ -60,7 +60,7 @@ def test():
     for model in models:
       result = model.predict(np.expand_dims(sample, axis = 0)) # y.shape = (1, 1)
       results.append(result)
-    results = np.squeeze(np.concatenate(results, axis = -1), axis = 0) # results.shape = (1, 35 * 2)
+    results = np.squeeze(np.concatenate(results, axis = -1)) # results.shape = (1, 35 * 2)
     mae = np.mean(np.abs(label - results))
     print('#%d mea: %f' % (idx, mae))
     losses.append(mae)
