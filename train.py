@@ -49,7 +49,7 @@ def main(unused_argv):
 def test():
   models = list()
   for i in range(35 * 2):
-    with open('%d.pickle' % i, 'rb') as f:
+    with open(join(FLAGS.ckpt, '%d.pickle' % i), 'rb') as f:
       models.append(pickle.loads(f.read()))
   samples = load_dataset()
   x = np.stack([sample[0].flatten() for sample in samples], axis = 0) # x.shape = (sample_num, 1800*2)
