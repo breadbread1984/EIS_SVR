@@ -50,7 +50,7 @@ def test():
   models = list()
   for i in range(35 * 2):
     with open(join(FLAGS.ckpt, '%d.pickle' % i), 'rb') as f:
-      models.append(make_pipeline(StandardScaler(), pickle.loads(f.read())))
+      models.append(pickle.loads(f.read()))
   samples = load_dataset()
   x = np.stack([sample[0].flatten() for sample in samples], axis = 0) # x.shape = (sample_num, 1800*2)
   y = np.stack([sample[1].flatten() for sample in samples], axis = 0) # y.shape = (sample_num, 35*2)
