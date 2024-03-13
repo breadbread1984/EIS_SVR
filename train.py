@@ -54,7 +54,8 @@ def test():
   samples = load_dataset()
   x = np.stack([sample[0].flatten() for sample in samples], axis = 0) # x.shape = (sample_num, 1800*2)
   y = np.stack([sample[1].flatten() for sample in samples], axis = 0) # y.shape = (sample_num, 35*2)
-  losses = list()
+  mae_losses = list()
+  mse_losses = list()
   for idx, (sample, label) in enumerate(zip(x, y)):
     results = list()
     for model in models:
@@ -62,9 +63,14 @@ def test():
       results.append(result)
     results = np.squeeze(np.concatenate(results, axis = -1)) # results.shape = (1, 35 * 2)
     mae = np.mean(np.abs(label - results))
+    mse = np.mean((label - results) ** 2)
     print('#%d mea: %f' % (idx, mae))
-    losses.append(mae)
-  print('mean mae: %f' % np.mean(losses))
+    mae_losses.append(mae)
+    mse_losses.append(mse)
+  print('mean mae: %f' % np.mean(mae_losses))
+  print('mean mse: %f' % np.mean(mse_losses))
+  print('max mae: %f' % np.max(mae_losses))
+  print('max mse: %f' % np.max(mse_losses))
 
 def train():
   samples = load_dataset()
