@@ -72,10 +72,9 @@ def train():
   mkdir(FLAGS.ckpt)
   x = np.stack([sample[0].flatten() for sample in samples], axis = 0) # x.shape = (sample_num, 1800*2)
   y = np.stack([sample[1].flatten() for sample in samples], axis = 0) # y.shape = (sample_num, 35*2)
-  models = [SVR(C=1.0, epsilon = 0.2) for i in range(35*2)]
+  models = [make_pipeline(StandardScaler(), SVR(C=1.0, epsilon = 0.2)) for i in range(35*2)]
   for i in range(35 * 2):
-    regr = make_pipeline(StandardScaler(), models[i])
-    regr.fit(x, y[:,i])
+    models[i].fit(x, y[:,i])
     with open(join(FLAGS.ckpt, '%d.pickle' % i), 'wb') as f:
       f.write(pickle.dumps(models[i]))
 
